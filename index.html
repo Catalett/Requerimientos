@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>FEND INVENTORY</title>
+    <style>
+        
+        body { 
+            font: 16px 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+        }
+
+        
+        #sidebar { 
+            width: 150px; 
+            background: #333; 
+            color: white; 
+            height: 100vh; 
+            padding-top: 20px; 
+            position: fixed; 
+        }
+
+        #sidebar a { 
+            color: white; 
+            padding: 10px 15px; 
+            text-decoration: none; 
+            display: block; 
+            font-size: 16px; 
+            text-align: center; 
+        }
+
+        #sidebar a:hover, 
+        #sidebar a.active { 
+            background: #575757; 
+        }
+
+        #sidebar a.active { 
+            border-left: 4px solid #fff; 
+        }
+        
+        
+        #mainContent {
+            margin-left: 150px;
+            padding: 20px;
+            display: none;
+            width: calc(100% - 150px);
+            box-sizing: border-box;
+        }
+
+        
+        #logo { 
+            position: absolute; 
+            top: 10px; 
+            left: 170px; 
+            height: 200px; 
+            transition: left 0.3s ease; 
+        }
+        
+        
+        @keyframes titleAnimation {
+            0% { 
+                opacity: 0; 
+                transform: translateY(-50px); 
+                color: #1B4965; 
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateY(0); 
+                color: #5FA8D3; 
+            }
+            100% { 
+                opacity: 0; 
+                transform: translateY(50px); 
+                color: #0A2472; 
+            }
+        }
+
+        
+        h1 { 
+            text-align: center; 
+            margin-top: 70px; 
+            font: bold 48px 'Verdana'; 
+            animation: titleAnimation 3s ease-in-out infinite; 
+            transform: rotate(-5deg); 
+            letter-spacing: 5px; 
+        }
+
+        #welcomeMessage h1 { 
+            transform: none; 
+            margin-top: 0; 
+        }
+        
+        
+        table, 
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed;
+        }
+
+        
+        table th, 
+        table td {
+            border: 1px solid black;
+            padding: 12px;
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        
+        table th:nth-child(3), 
+        table td:nth-child(3) {
+            width: 50%; 
+            white-space: normal; 
+        }
+
+        
+        table th:not(:nth-child(3)), 
+        table td:not(:nth-child(3)) {
+            width: 10%; 
+            white-space: nowrap; 
+        }
+        
+        
+        #searchContainer { 
+            text-align: center; 
+            margin: 20px 0; 
+        }
+
+        #searchInput { 
+            padding: 8px; 
+            font-size: 16px; 
+        }
+
+        #searchButton { 
+            padding: 8px 16px; 
+            font-size: 16px; 
+            background: white; 
+            color: blue; 
+            border: none; 
+            cursor: pointer; 
+        }
+
+        #searchButton:hover { 
+            background: lightblue; 
+            color: white; 
+        }
+
+        
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background: rgba(0,0,0,0.4); 
+            padding-top: 60px; 
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 1200px;
+            color: black;
+        }
+
+        .close { 
+            color: #aaa; 
+            float: right; 
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
+
+        .close:hover { 
+            color: black; 
+        }
+
+        
+        #csvTable tr:hover td {
+            background-color: #f5f5f5;
+            cursor: pointer;
+            white-space: normal;
+        }
+
+        
+        #welcomeMessage { 
+            position: fixed; 
+            left: 150px; 
+            right: 0; 
+            top: 0; 
+            bottom: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background: white; 
+            z-index: 1; 
+        }
+
+        
+        @media screen and (max-width: 768px) {
+            #sidebar { 
+                width: 100px; 
+            }
+            #mainContent {
+                margin-left: 100px;
+                width: calc(100% - 100px);
+            }
+            #logo { 
+                height: 60px; 
+            }
+            #welcomeMessage { 
+                left: 100px; 
+            }
+            table th, 
+            table td {
+                padding: 8px;
+                font-size: 14px;
+            }
+            
+            table th:nth-child(3), 
+            table td:nth-child(3) {
+                width: 40%; 
+            }
+            table th:not(:nth-child(3)), 
+            table td:not(:nth-child(3)) {
+                width: 12%; 
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="sidebar">
+        <a href="#" id="btnFend">FEND</a>
+        <a href="#" id="btnStock1">STOCK 1</a>
+        <a href="#" id="btnStock2">STOCK 2</a>
+        <a href="#" id="btnStock3">STOCK 3</a>
+    </div>
+
+    
+    <div id="mainContent">
+        <img id="logo" src="logo.jpg" alt="Logo de la página">
+        <h1>FEND INVENTORY</h1>
+        <div id="searchContainer">
+            <input id="searchInput" type="text" placeholder="Search">
+            <button id="searchButton">Search</button>
+        </div>
+        <table id="csvTable"></table>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Search results</h2>
+                <table id="modalTable" class="modal-table"></table>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="welcomeMessage">
+        <h1>Welcome to the inventory of FRONT END</h1>
+    </div>
+
+    <script>
+        
+        const els = {
+            welcome: document.getElementById('welcomeMessage'),
+            main: document.getElementById('mainContent'),
+            table: document.getElementById('csvTable'),
+            logo: document.getElementById('logo'),
+            modal: document.getElementById('myModal'),
+            search: document.getElementById('searchInput'),
+            modalTable: document.getElementById('modalTable')
+        };
+
+        
+        document.getElementById('sidebar').addEventListener('click', e => {
+            if (e.target.tagName === 'A') {
+                els.welcome.style.display = 'none';
+                els.main.style.display = 'block';
+                els.logo.style.left = '170px';
+                
+                
+                document.querySelectorAll('#sidebar a').forEach(a => a.classList.remove('active'));
+                e.target.classList.add('active');
+
+                if (e.target.id === 'btnFend') {
+                    els.search.value = '';
+                    els.modal.style.display = 'none';
+                    document.querySelectorAll('#csvTable tr').forEach(row => row.style.display = '');
+                } else {
+                    filterStockByRepetitions(parseInt(e.target.id.replace('btnStock', '')));
+                }
+            }
+        });
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            fetch('output_data.csv?' + new Date().getTime(), {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(csv => {
+                els.table.innerHTML = csv.split('\n')
+                    .filter(row => row.split(',').some(cell => cell.trim() !== ''))
+                    .map((row, i) => 
+                        `<tr>${row.split(',').map((cell, j) => 
+                            `<${i === 0 ? 'th' : 'td'}>${cell.trim()}</${i === 0 ? 'th' : 'td'}>`
+                        ).join('')}</tr>`
+                    ).join('');
+            })
+            .catch(error => {
+                console.error('Error loading CSV:', error);
+                els.table.innerHTML = '<tr><td>Error al cargar el archivo CSV.</td></tr>';
+            });
+
+            
+            const searchBtn = document.getElementById('searchButton');
+            
+            
+            els.search.addEventListener('keypress', e => {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+
+            
+            searchBtn.onclick = () => {
+                const val = els.search.value.trim();
+                if (val) {
+                    searchAndShowResults(val);
+                } else {
+                    alert('Por favor ingrese un término de búsqueda');
+                }
+            };
+
+            
+            [document.querySelector('.close'), window].forEach(el => 
+                el.onclick = e => {
+                    if (e.target === els.modal || e.target === document.querySelector('.close')) {
+                        els.modal.style.display = 'none';
+                    }
+                }
+            );
+        });
+
+        // Search 
+        function searchAndShowResults(searchValue) {
+            const rows = document.querySelectorAll('#csvTable tr');
+            els.modal.style.display = 'none';
+            els.modalTable.innerHTML = rows[0]?.outerHTML || '';
+
+            rows.forEach((row, i) => {
+                if (i && Array.from(row.querySelectorAll('td')).some(cell => 
+                    cell.textContent.toLowerCase().includes(searchValue.toLowerCase())
+                )) {
+                    els.modalTable.appendChild(row.cloneNode(true));
+                }
+            });
+            els.modal.style.display = 'block';
+        }
+
+        
+        function filterStockByRepetitions(reps) {
+            const rows = document.querySelectorAll('#csvTable tr');
+            const counts = {};
+            
+            
+            Array.from(rows).slice(1).forEach(row => {
+                const val = row.querySelector('td')?.textContent.trim();
+                if (val) counts[val] = (counts[val] || 0) + 1;
+            });
+
+            
+            rows.forEach((row, index) => {
+                if (index === 0) {
+                    row.style.display = ''; 
+                } else {
+                    const val = row.querySelector('td')?.textContent.trim();
+                    row.style.display = val && counts[val] === reps ? '' : 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
