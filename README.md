@@ -1,0 +1,1 @@
+En este repositorio se encuentran archivos de código desarrollado para distintos proyectos tanto en práctica profesional (Observatorio ALMA) como en asignatura de la carrera "Desarrollo de Aplicaciones Móviles" (Ingeniería Civil en Telecomunicaciones)
